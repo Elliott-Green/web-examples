@@ -25,17 +25,20 @@ import {
 	goerli,
 	ronin,
 	saigon,
+	sepolia,
 } from 'viem/chains'
 import { CUSTOM_WALLET } from './constants'
 
 export const projectId = import.meta.env.VITE_PROJECT_ID
 
-let storedCustomWallet;
-if(typeof window !== 'undefined'){
+let storedCustomWallet
+if (typeof window !== 'undefined') {
 	storedCustomWallet = localStorage.getItem(CUSTOM_WALLET)
 }
 
-const customWallets = storedCustomWallet ? [JSON.parse(storedCustomWallet)] : undefined
+const customWallets = storedCustomWallet
+	? [JSON.parse(storedCustomWallet)]
+	: undefined
 
 const metadata = {
 	name: 'Web3Modal',
@@ -60,6 +63,7 @@ export const chains = [
 	goerli,
 	ronin,
 	saigon,
+	sepolia,
 ] as const
 
 export const wagmiConfig = defaultWagmiConfig({
@@ -78,7 +82,7 @@ createWeb3Modal({
 	themeMode: 'dark',
 	featuredWalletIds: [],
 	enableAnalytics: true,
-	customWallets
+	customWallets,
 })
 
 export const chainId = readable(getChainId(wagmiConfig), (set) =>
@@ -87,15 +91,13 @@ export const chainId = readable(getChainId(wagmiConfig), (set) =>
 export const account = readable(getAccount(wagmiConfig), (set) =>
 	watchAccount(wagmiConfig, { onChange: set }),
 )
-export const provider = readable<unknown | undefined>(
-	undefined,
-	(set) =>
-		watchAccount(wagmiConfig, {
-			onChange: async (account) => {
-				if (!account.connector) return set(undefined)
-				set(await account.connector?.getProvider())
-			},
-		}),
+export const provider = readable<unknown | undefined>(undefined, (set) =>
+	watchAccount(wagmiConfig, {
+		onChange: async (account) => {
+			if (!account.connector) return set(undefined)
+			set(await account.connector?.getProvider())
+		},
+	}),
 )
 
 export const customWallet = writable({
@@ -107,7 +109,7 @@ export const customWallet = writable({
 	desktop_link: undefined,
 	webapp_link: undefined,
 	app_store: undefined,
-	play_store: undefined
+	play_store: undefined,
 })
 
 export const supported_chains = writable<string[]>([])
